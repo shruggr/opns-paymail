@@ -38,6 +38,7 @@ func main() {
 		server.WithP2PCapabilities(),
 		server.WithBeefCapabilities(),
 		server.WithDomain("1sat.app"),
+		server.WithDomain("opns-paymail-production.up.railway.app"),
 		server.WithDomain("localhost:3000"),
 		server.WithGenericCapabilities(),
 		server.WithPort(port),
