@@ -41,7 +41,7 @@ func main() {
 		server.WithTimeout(15*time.Second),
 		// server.WithCapabilities(customCapabilities()),
 	)
-	config.Prefix = "http://" //normally paymail requires https, but for demo purposes we'll use http
+	config.Prefix = "https://" //normally paymail requires https, but for demo purposes we'll use http
 	if err != nil {
 		logger.Fatal().Msg(err.Error())
 	}
