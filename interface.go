@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/bitcoin-sv/go-paymail"
@@ -20,39 +18,29 @@ type opnsServiceProvider struct {
 	// Extend your dependencies or custom values
 }
 
-type Ordinal struct {
-	Outpoint string `json:"outpoint"`
-	Height   uint32 `json:"height"`
-	Idx      string `json:"idx"`
-	Owner    string `json:"owner"`
+type Opns struct {
+	Outpoint string                 `json:"outpoint"`
+	Origin   string                 `json:"origin"`
+	Owner    string                 `json:"owner"`
+	Domain   string                 `json:"domain"`
+	Map      map[string]interface{} `json:"map,omitempty"`
 }
 
 // GetPaymailByAlias is a demo implementation of this interface
 func (d *opnsServiceProvider) GetAddressStringByAlias(_ context.Context, alias, domain string) (string, error) {
-	query := map[string]interface{}{
-		"opns": map[string]interface{}{
-			"status": 1,
-			"domain": alias,
-		},
-	}
-	buf := bytes.NewBuffer([]byte{})
-	address := ""
-	if err := json.NewEncoder(buf).Encode(query); err != nil {
-		return address, err
-	}
 
-	if resp, err := http.Post("https://ordinals.gorillapool.io/api/txos/search/unspent", "application/json", buf); err != nil {
+	address := ""
+
+	if resp, err := http.Get("https://ordinals.gorillapool.io/api/opns/" + alias); err != nil {
 		return address, err
 	} else {
-		var ordinals []*Ordinal
+		var opns *Opns
 		defer resp.Body.Close()
-		if err := json.NewDecoder(resp.Body).Decode(&ordinals); err != nil {
+		if err := json.NewDecoder(resp.Body).Decode(&opns); err != nil {
 			return address, err
 		}
-		if len(ordinals) == 0 {
-			return address, fmt.Errorf("not-found")
-		}
-		address = ordinals[0].Owner
+
+		address = opns.Owner
 	}
 	return address, nil
 }
@@ -68,6 +56,7 @@ func (d *opnsServiceProvider) GetPaymailByAlias(ctx context.Context, alias, doma
 			Alias:       alias,
 			Domain:      domain,
 			LastAddress: add,
+			PubKey:      "0000000000000000000000000000000000000000000000000000000000000000",
 		}, nil
 	}
 }
@@ -94,8 +83,6 @@ func (d *opnsServiceProvider) CreateAddressResolutionResponse(ctx context.Contex
 		// }
 		return response, nil
 	}
-
-	// return DemoCreateAddressResolutionResponse(ctx, alias, domain, senderValidation)
 }
 
 // CreateP2PDestinationResponse is a demo implementation of this interface
@@ -112,7 +99,7 @@ func (d *opnsServiceProvider) CreateP2PDestinationResponse(ctx context.Context, 
 		return nil, err
 	} else {
 		output.Script = hex.EncodeToString(*p2pkh)
-		output.Address = add
+		// output.Address = add
 		// Create the response
 		return &paymail.PaymentDestinationPayload{
 			Outputs:   []*paymail.PaymentOutput{output},
@@ -126,7 +113,7 @@ func (d *opnsServiceProvider) RecordTransaction(ctx context.Context,
 	p2pTx *paymail.P2PTransaction, _ *server.RequestMetadata,
 ) (*paymail.P2PTransactionPayload, error) {
 	// Record the tx into your datastore layer
-	return DemoRecordTransaction(ctx, p2pTx)
+	return nil, nil
 }
 
 // VerifyMerkleRoots is a demo implementation of this interface

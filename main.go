@@ -13,11 +13,6 @@ import (
 func main() {
 	logger := logging.GetDefaultLogger()
 
-	// initialize the demo database
-	if err := InitDemoDatabase(); err != nil {
-		logger.Fatal().Msg(err.Error())
-	}
-
 	sl := server.PaymailServiceLocator{}
 	sl.RegisterPaymailService(new(opnsServiceProvider))
 	sl.RegisterPikeContactService(new(opnsServiceProvider))
@@ -40,7 +35,7 @@ func main() {
 		server.WithDomain("1sat.app"),
 		server.WithDomain("opns-paymail-production.up.railway.app"),
 		server.WithDomain("localhost:3000"),
-		server.WithGenericCapabilities(),
+		// server.WithGenericCapabilities(),
 		server.WithPort(port),
 		// server.WithServiceName("BsvAliasCustom"),
 		server.WithTimeout(15*time.Second),
