@@ -56,7 +56,7 @@ func (d *opnsServiceProvider) GetPaymailByAlias(ctx context.Context, alias, doma
 			Alias:       alias,
 			Domain:      domain,
 			LastAddress: add,
-			PubKey:      "0000000000000000000000000000000000000000000000000000000000000000",
+			PubKey:      "000000000000000000000000000000000000000000000000000000000000000000",
 		}, nil
 	}
 }
